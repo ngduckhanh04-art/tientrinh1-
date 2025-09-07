@@ -1,19 +1,27 @@
+#include "stm32f10x.h"
+#include "stm32f10x_gpio.h"
+#include "delay.h"
 
+#define LED_PIN_1  GPIO_Pin_0
+#define LED_PIN_2 GPIO_Pin_4
 
-const int led1 = 8;  // LED đầu tiên gắn chân số 8
-const int led2 = 9;  // LED thứ hai gắn chân số 9
-
-void setup() {
-  pinMode(led1, OUTPUT);
-  pinMode(led2, OUTPUT);
+void GPIO_Configure_LED(void) {
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA , ENABLE);
+    GPIO_InitTypeDef gpio;
+    gpio.GPIO_Pin = LED_PIN_1 | LED_PIN_2;
+    gpio.GPIO_Speed = GPIO_Speed_50MHz;
+    gpio.GPIO_Mode = GPIO_Mode_Out_PP;  
+    GPIO_Init(GPIOA, &gpio);
 }
 
-void loop() {
-  digitalWrite(led1, HIGH);
-  digitalWrite(led2, HIGH);
-  delay(1000);  // Delay 1 giây
 
-  digitalWrite(led1, LOW);
-  digitalWrite(led2, LOW);
-  delay(1000);  // Delay 1 giây
+int main(void) {
+    GPIO_Configure_LED();
+		GPIO_ResetBits(GPIOA,LED_PIN_1 | LED_PIN_2);
+    while (1) {
+       GPIO_SetBits(GPIOA, LED_PIN_1 | LED_PIN_2);
+			delay_ms(500);
+			GPIO_ResetBits(GPIOA,LED_PIN_1 | LED_PIN_2);
+			delay_ms(500);
+    }
 }
